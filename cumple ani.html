@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Para Anahi</title>
+<style>
+  body{margin:0;background:black;overflow:hidden;font-family:Arial;}
+  .point{position:absolute;width:5px;height:5px;border-radius:50%;}
+  .float-flower{position:absolute;font-size:40px;animation:floatUp 6s linear forwards;pointer-events:none;z-index:5;}
+  @keyframes floatUp{from{transform:translateY(100vh);}to{transform:translateY(-10vh);opacity:0;}}
+  #fade{position:fixed;inset:0;background:black;display:none;z-index:9;}
+  #msg{position:fixed;inset:0;display:none;justify-content:center;align-items:center;font-size:65px;color:#ff69b4;text-shadow:0 0 20px white;z-index:10;text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="fade"></div>
+<div id="msg">🎉 FELIZ CUMPLEAÑOS ANI 🎉</div>
+
+<script>
+const colors=["#ff0000","#ff69b4","#00ffff","#ffff00","#00ff00","#ff00ff"];
+const emojis=['🌸','🌺','🌼','💐','🌹','🌷'];
+const flowers=[];
+
+function createFlower(){
+  const cx=Math.random()*innerWidth;
+  const cy=Math.random()*innerHeight;
+  const color=colors[Math.floor(Math.random()*colors.length)];
+  const points=[];
+  const petals=140;
+  let vx=(Math.random()-0.5)*4; // 🔥 más rápido
+  let vy=(Math.random()-0.5)*4; // 🔥 más rápido
+
+  for(let i=0;i<petals;i++){
+    const a=i*(Math.PI*2/petals);
+    const r=50*Math.sin(6*a);
+    const p=document.createElement("div");
+    p.className="point";
+    p.style.background=color;
+    document.body.appendChild(p);
+    points.push({el:p,angle:a});
+  }
+
+  flowers.push({cx,cy,vx,vy,points});
+}
+
+const createInterval=setInterval(createFlower,120);
+
+// Animar rápido
+const anim=setInterval(()=>{
+  flowers.forEach(f=>{
+    f.cx+=f.vx;
+    f.cy+=f.vy;
+
+    if(f.cx<40||f.cx>innerWidth-40)f.vx*=-1;
+    if(f.cy<40||f.cy>innerHeight-40)f.vy*=-1;
+
+    f.points.forEach(p=>{
+      const r=50*Math.sin(6*p.angle);
+      const x=f.cx+r*Math.cos(p.angle);
+      const y=f.cy+r*Math.sin(p.angle);
+      p.el.style.left=x+"px";
+      p.el.style.top=y+"px";
+    });
+  });
+},20);
+
+// ⏱️ Durar más tiempo (11 segundos)
+setTimeout(()=>{
+  clearInterval(createInterval);
+  clearInterval(anim);
+
+  document.querySelectorAll(".point").forEach(e=>e.remove());
+  document.getElementById("fade").style.display="block";
+
+  setTimeout(startFinal,1500);
+},11000);
+
+// Parte final
+function startFinal(){
+  document.getElementById("fade").style.display="none";
+
+  setInterval(()=>{
+    const f=document.createElement("div");
+    f.className="float-flower";
+    f.innerText=emojis[Math.floor(Math.random()*emojis.length)];
+    f.style.left=Math.random()*innerWidth+"px";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),6000);
+  },300);
+
+  setTimeout(()=>{
+    document.getElementById("msg").style.display="flex";
+  },3000);
+}
+</script>
+
+</body>
+</html>
